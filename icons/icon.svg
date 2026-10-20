@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f2e"/>
+      <stop offset="48%" stop-color="#12295e"/>
+      <stop offset="100%" stop-color="#2e6bff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="26%" cy="18%" r="75%">
+      <stop offset="0%" stop-color="#6ab5ff" stop-opacity="0.5"/>
+      <stop offset="55%" stop-color="#6ab5ff" stop-opacity="0.13"/>
+      <stop offset="100%" stop-color="#6ab5ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03"/>
+    </linearGradient>
+    <linearGradient id="note" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d9e6ff"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#04081a" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+
+  <circle cx="118" cy="132" r="118" fill="none" stroke="url(#ring)" stroke-width="14"/>
+  <circle cx="430" cy="436" r="96" fill="none" stroke="url(#ring)" stroke-width="10" opacity="0.55"/>
+
+  <g fill="#ffffff" opacity="0.16">
+    <rect x="46" y="396" width="20" height="64" rx="10"/>
+    <rect x="80" y="360" width="20" height="100" rx="10"/>
+    <rect x="114" y="414" width="20" height="46" rx="10"/>
+  </g>
+
+  <g filter="url(#soft)">
+    <g transform="translate(26 6)">
+      <line x1="204" y1="128" x2="342" y2="99" stroke="url(#note)" stroke-width="37" stroke-linecap="round"/>
+      <line x1="204" y1="130" x2="204" y2="394" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
+      <line x1="342" y1="100" x2="342" y2="364" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
+      <ellipse cx="158" cy="398" rx="54" ry="40" transform="rotate(-19 158 398)" fill="url(#note)"/>
+      <ellipse cx="296" cy="368" rx="54" ry="40" transform="rotate(-19 296 368)" fill="url(#note)"/>
+      <ellipse cx="150" cy="390" rx="18" ry="13" transform="rotate(-19 150 390)" fill="#ffffff" opacity="0.35"/>
+      <ellipse cx="288" cy="360" rx="18" ry="13" transform="rotate(-19 288 360)" fill="#ffffff" opacity="0.35"/>
+    </g>
+  </g>
+</svg>

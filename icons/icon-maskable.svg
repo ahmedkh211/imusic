@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f2e"/>
+      <stop offset="48%" stop-color="#12295e"/>
+      <stop offset="100%" stop-color="#2e6bff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#6ab5ff" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#6ab5ff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#6ab5ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="note" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d9e6ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+
+  <g transform="translate(97.4 89.6) scale(0.62)">
+    <line x1="204" y1="128" x2="342" y2="99" stroke="url(#note)" stroke-width="37" stroke-linecap="round"/>
+    <line x1="204" y1="130" x2="204" y2="394" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
+    <line x1="342" y1="100" x2="342" y2="364" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
+    <ellipse cx="158" cy="398" rx="54" ry="40" transform="rotate(-19 158 398)" fill="url(#note)"/>
+    <ellipse cx="296" cy="368" rx="54" ry="40" transform="rotate(-19 296 368)" fill="url(#note)"/>
+  </g>
+</svg>
