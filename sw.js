@@ -1,4 +1,4 @@
-const VERSION = 'imusic-v1.0.0';
+const VERSION = 'imusic-v1.2.0';
 const CACHE_NAME = 'imusic-' + VERSION;
 const APP_ASSETS = [
   './',
