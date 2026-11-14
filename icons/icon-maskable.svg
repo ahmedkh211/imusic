@@ -2,28 +2,24 @@
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0a0f2e"/>
-      <stop offset="48%" stop-color="#12295e"/>
+      <stop offset="50%" stop-color="#122a62"/>
       <stop offset="100%" stop-color="#2e6bff"/>
     </linearGradient>
-    <radialGradient id="glow" cx="30%" cy="20%" r="70%">
-      <stop offset="0%" stop-color="#6ab5ff" stop-opacity="0.45"/>
-      <stop offset="60%" stop-color="#6ab5ff" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#6ab5ff" stop-opacity="0"/>
+    <radialGradient id="glow" cx="28%" cy="20%" r="72%">
+      <stop offset="0%" stop-color="#7fb9ff" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#7fb9ff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#7fb9ff" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="note" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#d9e6ff"/>
+      <stop offset="100%" stop-color="#dbe8ff"/>
     </linearGradient>
   </defs>
 
   <rect width="512" height="512" fill="url(#bg)"/>
   <rect width="512" height="512" fill="url(#glow)"/>
 
-  <g transform="translate(97.4 89.6) scale(0.62)">
-    <line x1="204" y1="128" x2="342" y2="99" stroke="url(#note)" stroke-width="37" stroke-linecap="round"/>
-    <line x1="204" y1="130" x2="204" y2="394" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
-    <line x1="342" y1="100" x2="342" y2="364" stroke="url(#note)" stroke-width="16" stroke-linecap="butt"/>
-    <ellipse cx="158" cy="398" rx="54" ry="40" transform="rotate(-19 158 398)" fill="url(#note)"/>
-    <ellipse cx="296" cy="368" rx="54" ry="40" transform="rotate(-19 296 368)" fill="url(#note)"/>
+  <g transform="translate(111 122) scale(11.16)">
+    <path fill="url(#note)" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
   </g>
 </svg>
