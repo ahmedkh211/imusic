@@ -1,4 +1,4 @@
-const VERSION = 'imusic-v1.2.0';
+const VERSION = 'imusic-v1.2.1';
 const CACHE_NAME = 'imusic-' + VERSION;
 const APP_ASSETS = [
   './',
@@ -6,13 +6,13 @@ const APP_ASSETS = [
   './styles.css',
   './app.js',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-192.png',
-  './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon.png',
-  './icons/favicon-48.png',
-  './icons/favicon.ico',
+  './icons/icon-192.png?v=2',
+  './icons/icon-512.png?v=2',
+  './icons/icon-maskable-192.png?v=2',
+  './icons/icon-maskable-512.png?v=2',
+  './icons/apple-touch-icon.png?v=2',
+  './icons/favicon-48.png?v=2',
+  './icons/favicon.ico?v=2',
   './icons/icon.svg'
 ];
 
