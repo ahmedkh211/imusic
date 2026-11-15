@@ -1782,7 +1782,7 @@ function registerSW() {
 }
 
 /* ================= الإعدادات والخلفيات المتحركة ================= */
-const BG_MODES = ['none', 'galaxy', 'wave'];
+const BG_MODES = ['none', 'galaxy', 'wave', 'bars'];
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fxOff = () => prefs.memSave || REDUCED_MOTION;
 const FX_OFF = () => prefs.memSave || REDUCED_MOTION;
@@ -1799,7 +1799,9 @@ let nebulaCanvas = null;
 let audioCtx = null;
 let analyser = null;
 let timeData = null;
+let freqData = null;
 let wavePhase = 0;
+let barsPhase = 0;
 let lastPlayIconState = null;
 
 function setBg(mode) {
@@ -1824,6 +1826,7 @@ function setBg(mode) {
   }
   if (fxOff()) {
     if (bgMode === 'galaxy') drawGalaxy(0, true);
+    else if (bgMode === 'bars') drawBars(0, true);
     else drawWave(0, true);
     return;
   }
@@ -1952,6 +1955,7 @@ function ensureAudioGraph() {
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0.75;
     timeData = new Uint8Array(analyser.fftSize);
+    freqData = new Uint8Array(analyser.frequencyBinCount);
     src.connect(analyser);
     analyser.connect(audioCtx.destination);
     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
@@ -1975,7 +1979,7 @@ function drawWave(now, staticFrame) {
       points.push(v);
       if (Math.abs(v) > peak) peak = Math.abs(v);
     }
-    const scale = clamp(0.35 + peak * 2.2, 0.35, 1);
+    const scale = clamp(0.3 + peak * 1.1, 0.3, 0.58);
     points = points.map(v => v * scale);
   } else {
     const N = 160;
@@ -1985,7 +1989,7 @@ function drawWave(now, staticFrame) {
       points.push(Math.sin(x * Math.PI * 4 + wavePhase) * 0.035 * (1 + Math.sin(wavePhase * 0.7 + x * 6)));
     }
   }
-  const ampY = midY * 0.78;
+  const ampY = midY * 0.64;
   ctx.beginPath();
   for (let i = 0; i < points.length; i++) {
     const x = (i / (points.length - 1)) * bgW;
@@ -2011,6 +2015,56 @@ function drawWave(now, staticFrame) {
   ctx.lineTo(bgW, midY);
   ctx.stroke();
 }
+function drawBars(now, staticFrame) {
+  const ctx = bgCtx;
+  ctx.clearRect(0, 0, bgW, bgH);
+  const N = 56;
+  const gap = Math.max(3, bgW / 220);
+  const padX = Math.max(10, bgW * 0.015);
+  const bw = (bgW - padX * 2 - gap * (N - 1)) / N;
+  const baseY = bgH;
+  const maxH = bgH * 0.30;
+  let vals = new Array(N).fill(0);
+  const playing = !audio.paused && analyser && freqData;
+  if (playing) {
+    analyser.getByteFrequencyData(freqData);
+    const bins = analyser.frequencyBinCount;
+    for (let i = 0; i < N; i++) {
+      const t0 = Math.floor(Math.pow(i / N, 1.6) * bins * 0.72);
+      const t1 = Math.max(t0 + 1, Math.floor(Math.pow((i + 1) / N, 1.6) * bins * 0.72));
+      let sum = 0;
+      for (let j = t0; j < t1; j++) sum += freqData[j];
+      const v = (sum / (t1 - t0)) / 255;
+      vals[i] = Math.pow(v, 0.85);
+    }
+  } else {
+    barsPhase += staticFrame ? 0 : 0.02;
+    for (let i = 0; i < N; i++) {
+      const x = i / (N - 1);
+      vals[i] = 0.12 + 0.10 * Math.sin(x * Math.PI * 5 + barsPhase) * Math.sin(barsPhase * 0.6 + x * 9);
+    }
+  }
+  for (let i = 0; i < N; i++) {
+    const h = Math.max(4, vals[i] * maxH);
+    const x = padX + i * (bw + gap);
+    const y = baseY - h;
+    const grad = ctx.createLinearGradient(0, baseY, 0, y);
+    grad.addColorStop(0, 'rgba(79,141,255,0.16)');
+    grad.addColorStop(0.65, 'rgba(79,141,255,0.52)');
+    grad.addColorStop(1, 'rgba(160,200,255,0.95)');
+    ctx.fillStyle = grad;
+    const r = Math.min(bw / 2, 4);
+    if (ctx.roundRect) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, bw, h, [r, r, 1.5, 1.5]);
+      ctx.fill();
+    } else {
+      ctx.fillRect(x, y, bw, h);
+    }
+  }
+  ctx.fillStyle = 'rgba(127,178,255,0.16)';
+  ctx.fillRect(0, baseY - 1.5, bgW, 1.5);
+}
 function bgLoop(now) {
   bgRafId = 0;
   if (bgMode === 'none' || document.hidden) return;
@@ -2018,6 +2072,7 @@ function bgLoop(now) {
   if (now - bgLastFrame >= 30) {
     bgLastFrame = now;
     if (bgMode === 'galaxy') drawGalaxy(now);
+    else if (bgMode === 'bars') drawBars(now);
     else drawWave(now);
   }
   bgRafId = requestAnimationFrame(bgLoop);
@@ -2026,7 +2081,7 @@ window.addEventListener('resize', () => {
   if (bgMode === 'none') return;
   sizeBgCanvas();
   if (bgMode === 'galaxy') { initStars(); buildNebula(); if (fxOff()) drawGalaxy(0, true); }
-  else if (fxOff()) drawWave(0, true);
+  else if (fxOff()) { if (bgMode === 'bars') drawBars(0, true); else drawWave(0, true); }
 });
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && bgMode !== 'none' && !bgRafId && !fxOff()) {
@@ -2103,7 +2158,7 @@ $$('#bgOptions .picker-row').forEach(b => b.addEventListener('click', () => {
   const m = b.dataset.bg;
   if (m === bgMode) { closeSettings(); return; }
   setBg(m);
-  toast(m === 'none' ? 'أُغلفت الخلفية المتحركة' : m === 'galaxy' ? 'خلفية المجرة والنجوم' : 'خلفية الموجة الصوتية', 'success', 1500);
+  toast(m === 'none' ? 'أُغلفت الخلفية المتحركة' : m === 'galaxy' ? 'خلفية المجرة والنجوم' : m === 'bars' ? 'خلفية الأعمدة الصوتية' : 'خلفية الموجة الصوتية', 'success', 1500);
 }));
 $$('#glassOptions .picker-row').forEach(b => b.addEventListener('click', () => {
   prefs.glass = b.dataset.glass;
