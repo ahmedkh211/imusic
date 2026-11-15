@@ -1963,32 +1963,37 @@ function ensureAudioGraph() {
     audioCtx = null; analyser = null;
   }
 }
+let waveEnv = 0, waveLast = null, waveLastScale = 0.5;
 function drawWave(now, staticFrame) {
   const ctx = bgCtx;
   ctx.clearRect(0, 0, bgW, bgH);
   const midY = bgH / 2;
-  let points = [];
-  let playing = !audio.paused && analyser;
+  const N = 160;
+  const playing = !audio.paused && analyser;
+  waveEnv += ((playing ? 1 : 0) - waveEnv) * (playing ? 0.12 : 0.05);
+  if (!playing && waveEnv < 0.004) waveEnv = 0;
+  wavePhase += staticFrame ? 0 : 0.016;
+  const idle = [];
+  for (let i = 0; i < N; i++) {
+    const x = i / (N - 1);
+    idle.push(Math.sin(x * Math.PI * 4 + wavePhase) * 0.035 * (1 + Math.sin(wavePhase * 0.7 + x * 6)));
+  }
   if (playing) {
     analyser.getByteTimeDomainData(timeData);
-    const N = 160;
     const step = Math.floor(timeData.length / N);
     let peak = 0;
+    const real = [];
     for (let i = 0; i < N; i++) {
       const v = (timeData[i * step] - 128) / 128;
-      points.push(v);
+      real.push(v);
       if (Math.abs(v) > peak) peak = Math.abs(v);
     }
-    const scale = clamp(0.3 + peak * 1.1, 0.3, 0.58);
-    points = points.map(v => v * scale);
-  } else {
-    const N = 160;
-    wavePhase += staticFrame ? 0 : 0.016;
-    for (let i = 0; i < N; i++) {
-      const x = i / (N - 1);
-      points.push(Math.sin(x * Math.PI * 4 + wavePhase) * 0.035 * (1 + Math.sin(wavePhase * 0.7 + x * 6)));
-    }
+    waveLastScale = clamp(0.3 + peak * 1.1, 0.3, 0.58);
+    waveLast = real;
   }
+  let points;
+  if (waveLast && waveEnv > 0) points = idle.map((iv, i) => iv + (waveLast[i] * waveLastScale - iv) * waveEnv);
+  else points = idle;
   const ampY = midY * 0.64;
   ctx.beginPath();
   for (let i = 0; i < points.length; i++) {
@@ -2015,6 +2020,7 @@ function drawWave(now, staticFrame) {
   ctx.lineTo(bgW, midY);
   ctx.stroke();
 }
+let barsEnv = 0, barsLast = null;
 function drawBars(now, staticFrame) {
   const ctx = bgCtx;
   ctx.clearRect(0, 0, bgW, bgH);
@@ -2022,48 +2028,52 @@ function drawBars(now, staticFrame) {
   const gap = Math.max(3, bgW / 220);
   const padX = Math.max(10, bgW * 0.015);
   const bw = (bgW - padX * 2 - gap * (N - 1)) / N;
-  const baseY = bgH;
-  const maxH = bgH * 0.30;
-  let vals = new Array(N).fill(0);
+  const midY = bgH / 2;
+  const maxH = midY * 0.45;
   const playing = !audio.paused && analyser && freqData;
+  barsEnv += ((playing ? 1 : 0) - barsEnv) * (playing ? 0.12 : 0.05);
+  if (!playing && barsEnv < 0.004) barsEnv = 0;
+  barsPhase += staticFrame ? 0 : 0.02;
+  const idle = [];
+  for (let i = 0; i < N; i++) {
+    const x = i / (N - 1);
+    idle.push(0.12 + 0.10 * Math.sin(x * Math.PI * 5 + barsPhase) * Math.sin(barsPhase * 0.6 + x * 9));
+  }
   if (playing) {
     analyser.getByteFrequencyData(freqData);
     const bins = analyser.frequencyBinCount;
+    const real = new Array(N);
     for (let i = 0; i < N; i++) {
       const t0 = Math.floor(Math.pow(i / N, 1.6) * bins * 0.72);
       const t1 = Math.max(t0 + 1, Math.floor(Math.pow((i + 1) / N, 1.6) * bins * 0.72));
       let sum = 0;
       for (let j = t0; j < t1; j++) sum += freqData[j];
-      const v = (sum / (t1 - t0)) / 255;
-      vals[i] = Math.pow(v, 0.85);
+      real[i] = Math.pow((sum / (t1 - t0)) / 255, 0.85);
     }
-  } else {
-    barsPhase += staticFrame ? 0 : 0.02;
-    for (let i = 0; i < N; i++) {
-      const x = i / (N - 1);
-      vals[i] = 0.12 + 0.10 * Math.sin(x * Math.PI * 5 + barsPhase) * Math.sin(barsPhase * 0.6 + x * 9);
-    }
+    barsLast = real;
   }
+  let vals;
+  if (barsLast && barsEnv > 0) vals = idle.map((iv, i) => iv + (barsLast[i] - iv) * barsEnv);
+  else vals = idle;
   for (let i = 0; i < N; i++) {
     const h = Math.max(4, vals[i] * maxH);
     const x = padX + i * (bw + gap);
-    const y = baseY - h;
-    const grad = ctx.createLinearGradient(0, baseY, 0, y);
-    grad.addColorStop(0, 'rgba(79,141,255,0.16)');
-    grad.addColorStop(0.65, 'rgba(79,141,255,0.52)');
+    const grad = ctx.createLinearGradient(0, midY - h, 0, midY + h);
+    grad.addColorStop(0, 'rgba(160,200,255,0.95)');
+    grad.addColorStop(0.5, 'rgba(79,141,255,0.42)');
     grad.addColorStop(1, 'rgba(160,200,255,0.95)');
     ctx.fillStyle = grad;
     const r = Math.min(bw / 2, 4);
     if (ctx.roundRect) {
       ctx.beginPath();
-      ctx.roundRect(x, y, bw, h, [r, r, 1.5, 1.5]);
+      ctx.roundRect(x, midY - h, bw, h * 2, r);
       ctx.fill();
     } else {
-      ctx.fillRect(x, y, bw, h);
+      ctx.fillRect(x, midY - h, bw, h * 2);
     }
   }
-  ctx.fillStyle = 'rgba(127,178,255,0.16)';
-  ctx.fillRect(0, baseY - 1.5, bgW, 1.5);
+  ctx.fillStyle = 'rgba(127,178,255,0.18)';
+  ctx.fillRect(0, midY - 0.75, bgW, 1.5);
 }
 function bgLoop(now) {
   bgRafId = 0;

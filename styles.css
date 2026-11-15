@@ -90,7 +90,7 @@ img{display:block;max-width:100%}
 .icon.accent{color:var(--accent)}
 [dir="rtl"] .flip-rtl{transform:scaleX(-1)}
 
-.app{position:relative;z-index:1;max-width:1440px;margin:0 auto}
+.app{position:relative;z-index:1;max-width:none;margin:0 auto}
 
 /* ---------- Header & tabs ---------- */
 .app-header{
@@ -459,7 +459,7 @@ img{display:block;max-width:100%}
 .mini-player{
   --mp-inset:calc(env(safe-area-inset-bottom,0px) + 10px);
   position:fixed;z-index:60;
-  inset-inline:max(16px,calc((100% - 1412px)/2));
+  inset-inline:16px;
   bottom:var(--mp-inset);
   pointer-events:none;
 }
@@ -519,7 +519,7 @@ html[dir="ltr"] #miniProgressFill{transform-origin:0 50%}
   height:100%;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   gap:6px;padding:8px 22px calc(20px + env(safe-area-inset-bottom,0px));
-  max-width:1440px;margin:0 auto;
+  max-width:none;margin:0 auto;
 }
 .np-top{width:100%;display:flex;align-items:center;gap:8px;flex:none}
 .np-label{flex:1;text-align:center;font-size:12px;letter-spacing:2.5px;color:var(--text-3);font-weight:800}
@@ -710,7 +710,7 @@ body.no-mini .banner.hint{bottom:calc(env(safe-area-inset-bottom,0px) + 14px)}
 /* ---------- Selection bar ---------- */
 .selection-bar{
   position:fixed;z-index:65;
-  inset-inline:max(16px,calc((100% - 1412px)/2));
+  inset-inline:16px;
   bottom:calc(var(--mini-h) + env(safe-area-inset-bottom,0px) + 16px);
   display:flex;align-items:center;gap:10px;
   padding:9px 10px;background:var(--surface-2);
@@ -731,7 +731,7 @@ body.drag-active .song-row:not(.drag-ghost){transition:transform .18s var(--ease
   .np-inner{
     display:grid;grid-template-columns:minmax(280px,44%) 1fr;
     column-gap:40px;align-items:center;justify-items:stretch;
-    max-width:1440px;
+    max-width:none;
     padding:8px 34px calc(18px + env(safe-area-inset-bottom,0px));
   }
   .np-top{grid-column:1/-1;grid-row:1;align-self:start}
@@ -745,7 +745,6 @@ body.drag-active .song-row:not(.drag-ghost){transition:transform .18s var(--ease
 
 /* ---------- شاشات عريضة (تاب لاندسكيب) — استغلال العرض كامل ---------- */
 @media (orientation:landscape) and (min-width:1000px){
-  .app{max-width:1440px}
   .app-main{padding-inline:28px}
   .tabs{margin-inline:28px}
   .mini-player{--mp-inset:calc(env(safe-area-inset-bottom,0px) + 14px);inset-inline:24px}
@@ -853,5 +852,5 @@ body.drag-active .song-row:not(.drag-ghost){transition:transform .18s var(--ease
 }
 
 @media (min-width:900px){
-  .settings-body{max-width:680px}
+  .settings-body{max-width:none}
 }
