@@ -1839,7 +1839,7 @@ function stopBgLoop() {
   bgLastFrame = 0;
 }
 function sizeBgCanvas() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const dpr = Math.min(window.devicePixelRatio || 1, fxOff() ? 1 : 1.5);
   bgW = window.innerWidth;
   bgH = window.innerHeight;
   bgCanvas.width = Math.round(bgW * dpr);
@@ -2183,8 +2183,8 @@ function applyGlass() {
 function applyMemSave() {
   if (prefs.memSave) document.documentElement.setAttribute('data-memsave', '');
   else document.documentElement.removeAttribute('data-memsave');
-  artCache.setMax(prefs.memSave ? 80 : ART_CACHE_MAX);
-  realArtUrls.setMax(prefs.memSave ? 80 : REAL_ART_MAX);
+  artCache.setMax(prefs.memSave ? 40 : ART_CACHE_MAX);
+  realArtUrls.setMax(prefs.memSave ? 40 : REAL_ART_MAX);
 }
 function refreshBgOptionsUI() {
   $$('#bgOptions .picker-row').forEach(b => {
