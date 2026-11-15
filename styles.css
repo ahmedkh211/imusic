@@ -250,6 +250,98 @@ img{display:block;max-width:100%}
 [data-glass="frost"][data-bg] .modal-input{
   border-color:rgba(255,255,255,.10);
 }
+/* الوضع الفاتح مع الخلفيات — سماء نهار وزجاج أبيض */
+[data-theme="light"][data-bg] body{
+  --surface:rgba(255,255,255,.55);
+  --surface-2:rgba(255,255,255,.50);
+  --card:rgba(255,255,255,.60);
+  --card-2:rgba(255,255,255,.52);
+  --header-bg:rgba(245,251,255,.55);
+  --sheet-bg:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(234,246,255,.95) 100%);
+  --line:rgba(20,60,110,.10);
+  --line-2:rgba(20,60,110,.17);
+  --shadow-1:0 8px 30px rgba(30,80,140,.16);
+  --shadow-2:0 16px 50px rgba(30,80,140,.22);
+  --text:#12263f;
+  --text-2:#4a6076;
+  --text-3:#7188a0;
+  --accent-soft:rgba(47,107,255,.14);
+  --accent-soft-2:rgba(47,107,255,.26);
+}
+[data-theme="light"][data-bg="galaxy"] body{--bg:#9ed4f5;--bg-2:#bfe3fa}
+[data-theme="light"][data-bg="wave"] body,
+[data-theme="light"][data-bg="bars"] body{--bg:#eef6fd;--bg-2:#e3f0fb;background:#eef6fd}
+[data-theme="light"][data-glass="clear"][data-bg] body{
+  --surface:rgba(255,255,255,.34);
+  --surface-2:rgba(255,255,255,.30);
+  --card:rgba(255,255,255,.38);
+  --card-2:rgba(255,255,255,.34);
+  --header-bg:rgba(245,251,255,.38);
+  --sheet-bg:linear-gradient(180deg,rgba(255,255,255,.60) 0%,rgba(234,246,255,.68) 100%);
+  --glass-xl:8px;
+  --glass-lg:6px;
+  --glass-md:6px;
+  --glass-sm:7px;
+}
+[data-theme="light"][data-glass="soft"][data-bg] body{
+  --surface:rgba(255,255,255,.55);
+  --surface-2:rgba(255,255,255,.50);
+  --card:rgba(255,255,255,.60);
+  --card-2:rgba(255,255,255,.52);
+  --header-bg:rgba(245,251,255,.50);
+  --sheet-bg:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(234,246,255,.90) 100%);
+  --glass-xl:16px;
+  --glass-lg:13px;
+  --glass-md:11px;
+  --glass-sm:12px;
+}
+[data-theme="light"][data-glass="frost"][data-bg] body{
+  --surface:rgba(255,255,255,.82);
+  --surface-2:rgba(255,255,255,.78);
+  --card:rgba(255,255,255,.86);
+  --card-2:rgba(255,255,255,.80);
+  --header-bg:rgba(245,251,255,.80);
+  --sheet-bg:linear-gradient(180deg,rgba(255,255,255,.96) 0%,rgba(240,248,255,.97) 100%);
+  --glass-xl:30px;
+  --glass-lg:24px;
+  --glass-md:18px;
+  --glass-sm:22px;
+}
+[data-theme="light"][data-glass="clear"][data-bg] .app-header,
+[data-theme="light"][data-glass="clear"][data-bg] .tabs,
+[data-theme="light"][data-glass="clear"][data-bg] .np-sheet,
+[data-theme="light"][data-glass="clear"][data-bg] .modal,
+[data-theme="light"][data-glass="clear"][data-bg] .mini-float,
+[data-theme="light"][data-glass="clear"][data-bg] .selection-bar{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 10px 34px rgba(30,80,140,.14);
+}
+[data-theme="light"][data-glass="clear"][data-bg] .song-row,
+[data-theme="light"][data-glass="clear"][data-bg] .playlist-card{
+  border-color:rgba(20,60,110,.14);
+}
+[data-theme="light"][data-glass="clear"][data-bg] .btn:not(.primary):not(.ghost),
+[data-theme="light"][data-glass="clear"][data-bg] .chip:not(.accent),
+[data-theme="light"][data-glass="clear"][data-bg] .picker-row,
+[data-theme="light"][data-glass="clear"][data-bg] .modal-input{
+  background:rgba(20,60,110,.05);
+  border:1px solid rgba(20,60,110,.15);
+}
+[data-theme="light"][data-glass="frost"][data-bg] .song-row,
+[data-theme="light"][data-glass="frost"][data-bg] .playlist-card,
+[data-theme="light"][data-glass="frost"][data-bg] .btn:not(.primary):not(.ghost),
+[data-theme="light"][data-glass="frost"][data-bg] .chip:not(.accent),
+[data-theme="light"][data-glass="frost"][data-bg] .picker-row,
+[data-theme="light"][data-glass="frost"][data-bg] .modal-input{
+  border-color:rgba(20,60,110,.12);
+}
+[data-theme="light"][data-memsave][data-bg] body{
+  --surface:#ffffff;
+  --surface-2:#f2f5fc;
+  --card:#ffffff;
+  --card-2:#f4f7fe;
+  --header-bg:rgba(245,251,255,.95);
+  --sheet-bg:linear-gradient(180deg,#f7f9ff 0%,#eef1f8 100%);
+}
 [data-bg="wave"] body,[data-bg="bars"] body{--accent-soft:rgba(79,141,255,.13);background:#000}
 [data-bg] .app-header{
   background:var(--header-bg);

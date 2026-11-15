@@ -1821,6 +1821,7 @@ function setBg(mode) {
   if (mode === 'galaxy') {
     initStars();
     buildNebula();
+    initClouds();
   } else if (!fxOff()) {
     ensureAudioGraph();
   }
@@ -1887,16 +1888,78 @@ function starColor(tint) {
   if (tint < 0.9) return '188,215,255';
   return '255,217,168';
 }
+function bgLight() {
+  return document.documentElement.getAttribute('data-theme') === 'light';
+}
+let clouds = [];
+function initClouds() {
+  clouds = [];
+  for (let i = 0; i < 4; i++) {
+    clouds.push({
+      x: Math.random() * bgW,
+      y: bgH * (0.08 + Math.random() * 0.5),
+      s: 0.6 + Math.random() * 0.9,
+      v: 0.06 + Math.random() * 0.1,
+      a: 0.10 + Math.random() * 0.12
+    });
+  }
+}
+function drawClouds(ctx, staticFrame) {
+  for (const c of clouds) {
+    if (!staticFrame) { c.x += c.v; if (c.x - 170 * c.s > bgW) c.x = -170 * c.s; }
+    const puffs = [[0, 0, 1], [-0.55, 0.18, 0.72], [0.55, 0.15, 0.78], [0.1, -0.3, 0.6]];
+    for (const p of puffs) {
+      const r = 90 * c.s * p[2];
+      const g = ctx.createRadialGradient(c.x + p[0] * r, c.y + p[1] * r, 0, c.x + p[0] * r, c.y + p[1] * r, r);
+      g.addColorStop(0, 'rgba(255,255,255,' + c.a.toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(c.x + p[0] * r, c.y + p[1] * r, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
 function drawGalaxy(now, staticFrame) {
   const ctx = bgCtx;
   ctx.clearRect(0, 0, bgW, bgH);
-  if (nebulaCanvas) ctx.drawImage(nebulaCanvas, 0, 0, bgW, bgH);
+  const light = bgLight();
+  if (light) {
+    const sky = ctx.createLinearGradient(0, 0, 0, bgH);
+    sky.addColorStop(0, '#8ecbf3');
+    sky.addColorStop(0.55, '#bde2fa');
+    sky.addColorStop(1, '#e9f6fd');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, bgW, bgH);
+    const sx = bgW * 0.78, sy = bgH * 0.15;
+    const pulse = staticFrame ? 0.5 : 0.5 + 0.5 * Math.sin(now * 0.0011);
+    const sr = Math.min(bgW, bgH) * 0.14;
+    const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 3);
+    halo.addColorStop(0, 'rgba(255,246,214,0.9)');
+    halo.addColorStop(0.22, 'rgba(255,216,140,0.5)');
+    halo.addColorStop(0.55, 'rgba(255,192,110,0.16)');
+    halo.addColorStop(1, 'rgba(255,192,110,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr * 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,252,238,0.98)';
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr * (0.58 + 0.03 * pulse), 0, Math.PI * 2);
+    ctx.fill();
+    drawClouds(ctx, staticFrame);
+  } else if (nebulaCanvas) {
+    ctx.drawImage(nebulaCanvas, 0, 0, bgW, bgH);
+  }
   const t = now * 0.001;
   for (const s of stars) {
-    const alpha = (0.45 + 0.55 * (0.5 + 0.5 * Math.sin(t * s.tw + s.ph))) * (0.35 + s.z * 0.65);
+    const base = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(t * s.tw + s.ph));
+    const alpha = base * (0.35 + s.z * 0.65) * (light ? 1.5 : 1);
     ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r * (0.75 + s.z * 0.5), 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${starColor(s.tint)},${alpha.toFixed(3)})`;
+    ctx.arc(s.x, s.y, s.r * (0.75 + s.z * 0.5) * (light ? 0.8 : 1), 0, Math.PI * 2);
+    ctx.fillStyle = light
+      ? 'rgba(255,255,255,' + Math.min(alpha, 0.95).toFixed(3) + ')'
+      : 'rgba(' + starColor(s.tint) + ',' + alpha.toFixed(3) + ')';
     ctx.fill();
   }
   if (staticFrame) return;
@@ -1906,7 +1969,7 @@ function drawGalaxy(now, staticFrame) {
     if (s.x < -4) s.x = bgW + 4;
     if (s.y > bgH + 4) s.y = -4;
   }
-  if (now > nextShootAt) {
+  if (!light && now > nextShootAt) {
     const fromTop = Math.random() < 0.7;
     const speed = 320 + Math.random() * 380;
     const ang = Math.PI * (0.62 + Math.random() * 0.18);
@@ -1995,6 +2058,7 @@ function drawWave(now, staticFrame) {
   if (waveLast && waveEnv > 0) points = idle.map((iv, i) => iv + (waveLast[i] * waveLastScale - iv) * waveEnv);
   else points = idle;
   const ampY = midY * 0.64;
+  const light = bgLight();
   ctx.beginPath();
   for (let i = 0; i < points.length; i++) {
     const x = (i / (points.length - 1)) * bgW;
@@ -2006,14 +2070,14 @@ function drawWave(now, staticFrame) {
       ctx.quadraticCurveTo(px, py, (px + x) / 2, (py + y) / 2);
     }
   }
-  ctx.strokeStyle = 'rgba(127,178,255,0.95)';
+  ctx.strokeStyle = light ? 'rgba(37,99,235,0.92)' : 'rgba(127,178,255,0.95)';
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
-  ctx.shadowColor = 'rgba(79,141,255,0.85)';
+  ctx.shadowColor = light ? 'rgba(37,99,235,0.4)' : 'rgba(79,141,255,0.85)';
   ctx.shadowBlur = 18;
   ctx.stroke();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+  ctx.strokeStyle = light ? 'rgba(37,99,235,0.25)' : 'rgba(255,255,255,0.28)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(0, midY);
@@ -2059,9 +2123,15 @@ function drawBars(now, staticFrame) {
     const h = Math.max(4, vals[i] * maxH);
     const x = padX + i * (bw + gap);
     const grad = ctx.createLinearGradient(0, midY - h, 0, midY + h);
-    grad.addColorStop(0, 'rgba(160,200,255,0.95)');
-    grad.addColorStop(0.5, 'rgba(79,141,255,0.42)');
-    grad.addColorStop(1, 'rgba(160,200,255,0.95)');
+    if (bgLight()) {
+      grad.addColorStop(0, 'rgba(37,99,235,0.92)');
+      grad.addColorStop(0.5, 'rgba(37,99,235,0.45)');
+      grad.addColorStop(1, 'rgba(37,99,235,0.92)');
+    } else {
+      grad.addColorStop(0, 'rgba(160,200,255,0.95)');
+      grad.addColorStop(0.5, 'rgba(79,141,255,0.42)');
+      grad.addColorStop(1, 'rgba(160,200,255,0.95)');
+    }
     ctx.fillStyle = grad;
     const r = Math.min(bw / 2, 4);
     if (ctx.roundRect) {
@@ -2072,7 +2142,7 @@ function drawBars(now, staticFrame) {
       ctx.fillRect(x, midY - h, bw, h * 2);
     }
   }
-  ctx.fillStyle = 'rgba(127,178,255,0.18)';
+  ctx.fillStyle = bgLight() ? 'rgba(37,99,235,0.28)' : 'rgba(127,178,255,0.18)';
   ctx.fillRect(0, midY - 0.75, bgW, 1.5);
 }
 function bgLoop(now) {
@@ -2090,7 +2160,7 @@ function bgLoop(now) {
 window.addEventListener('resize', () => {
   if (bgMode === 'none') return;
   sizeBgCanvas();
-  if (bgMode === 'galaxy') { initStars(); buildNebula(); if (fxOff()) drawGalaxy(0, true); }
+  if (bgMode === 'galaxy') { initStars(); buildNebula(); initClouds(); if (fxOff()) drawGalaxy(0, true); }
   else if (fxOff()) { if (bgMode === 'bars') drawBars(0, true); else drawWave(0, true); }
 });
 document.addEventListener('visibilitychange', () => {
